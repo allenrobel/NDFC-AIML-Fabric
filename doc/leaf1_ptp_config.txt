@@ -1,0 +1,17 @@
+Leaf 1 PTP Config
+
+feature ptp
+feature interface-vlan
+vlan 3967
+
+interface Vlan3967
+  no shutdown
+  mtu 9216
+  ip address 192.168.0.70/24
+
+ptp source 192.168.0.100
+
+
+interface Ethernet1/35
+  ptp
+  ptp vlan 3967

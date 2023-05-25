@@ -1,0 +1,623 @@
+---
+-   name: AI/ML Fabric Create
+    gather_facts: false
+    hosts:
+    -   ndfc
+    vars:
+        fabric_name: AIML
+        fabric_mtu: "9216"
+        asn_spine: "65535"
+        asn_leaf: "65011"
+        ptp_vlan: "3967"
+        ptp_source_ip: 192.168.0.100
+        qos_input_policy: QOS_classification_policy
+        username: "{{ ansible_user }}"
+        password: "{{ ansible_password }}"
+        leaf1: 192.168.1.111
+        leaf2: 192.168.1.112
+        leaf3: 192.168.1.113
+        leaf4: 192.168.1.114
+        spine1: 192.168.1.115
+        spine2: 192.168.1.116
+        spine3: 192.168.1.117
+        leaf1_serial: FDO111114AA
+        leaf2_serial: FDO222222AA
+        leaf3_serial: FDO333333AA
+        leaf4_serial: FDO444444AA
+        spine1_serial: FDO555555AA
+        spine2_serial: FD0666666AA
+        spine3_serial: FDO777777AA
+    tasks:
+    -   name: AI/ML Fabric Create
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics
+            json_data: "{{ vars_dict | to_json }}"
+        register: r1
+        vars:
+            vars_dict:
+                fabricName: "{{ fabric_name }}"
+                templateName: Easy_Fabric_eBGP
+                nvPairs:
+                    FABRIC_NAME: "{{ fabric_name }}"
+                    BGP_AS: "{{ asn_spine }}"
+                    SUPER_SPINE_BGP_AS: ''
+                    BGP_AS_MODE: Same-Tier-AS
+                    STATIC_UNDERLAY_IP_ALLOC: 'false'
+                    LOOPBACK0_IPV6_RANGE: ''
+                    DISABLE_ROUTE_MAP_TAG: 'false'
+                    PM_ENABLE: 'false'
+                    FABRIC_TYPE: Switch_Fabric
+                    FABRIC_TECHNOLOGY: EBGPVXLANFabric
+                    default_asn_template: bgp_asn
+                    UNDERLAY_IS_V6_PREV: ''
+                    USE_LINK_LOCAL: 'true'
+                    PM_ENABLE_PREV: 'false'
+                    OVERLAY_MODE_PREV: ''
+                    ENABLE_FABRIC_VPC_DOMAIN_ID_PREV: ''
+                    FABRIC_VPC_DOMAIN_ID_PREV: ''
+                    FABRIC_MTU_PREV: "{{ fabric_mtu }}"
+                    L2_HOST_INTF_MTU_PREV: "{{ fabric_mtu }}"
+                    ENABLE_PVLAN_PREV: ''
+                    DEPLOYMENT_FREEZE: 'false'
+                    MGMT_V6PREFIX: '64'
+                    abstract_feature_leaf: base_feature_leaf_upg
+                    abstract_feature_spine: base_feature_spine_upg
+                    abstract_dhcp: base_dhcp
+                    abstract_multicast: base_multicast_11_1
+                    abstract_anycast_rp: anycast_rp
+                    abstract_loopback_interface: int_fabric_loopback_11_1
+                    abstract_vpc_domain: base_vpc_domain_11_1
+                    abstract_vlan_interface: int_fabric_vlan_11_1
+                    abstract_pim_interface: pim_interface
+                    abstract_route_map: route_map
+                    abstract_bgp: base_bgp
+                    abstract_extra_config_leaf: extra_config_leaf
+                    abstract_extra_config_bootstrap: extra_config_bootstrap_11_1
+                    abstract_extra_config_spine: extra_config_spine
+                    temp_anycast_gateway: anycast_gateway
+                    temp_vpc_domain_mgmt: vpc_domain_mgmt
+                    temp_vpc_peer_link: int_vpc_peer_link_po
+                    abstract_routed_host: int_routed_host
+                    abstract_trunk_host: int_trunk_host
+                    BRFIELD_DEBUG_FLAG: Disable
+                    ACTIVE_MIGRATION: 'false'
+                    FF: Easy_Fabric_eBGP
+                    DHCP_START_INTERNAL: ''
+                    DHCP_END_INTERNAL: ''
+                    MGMT_GW_INTERNAL: ''
+                    MGMT_PREFIX_INTERNAL: ''
+                    BOOTSTRAP_MULTISUBNET_INTERNAL: ''
+                    MGMT_V6PREFIX_INTERNAL: ''
+                    DHCP_IPV6_ENABLE_INTERNAL: ''
+                    ENABLE_NETFLOW_PREV: ''
+                    LINK_STATE_ROUTING: ebgp
+                    FABRIC_INTERFACE_TYPE: p2p
+                    LINK_STATE_ROUTING_TAG: UNDERLAY
+                    OSPF_AREA_ID: 0.0.0.0
+                    PREV_EVPN_FLAG: ''
+                    PREV_FHRP_PROTOCOL: ''
+                    ANYCAST_RP_IP_RANGE_INTERNAL: ''
+                    RR_COUNT: '2'
+                    ENABLE_EVPN: false
+                    L3VNI_MCAST_GROUP: ''
+                    PHANTOM_RP_LB_ID1: ''
+                    PHANTOM_RP_LB_ID2: ''
+                    PHANTOM_RP_LB_ID3: ''
+                    PHANTOM_RP_LB_ID4: ''
+                    NETWORK_VLAN_RANGE: 2300-2999
+                    VPC_PEER_LINK_VLAN: '3600'
+                    ENABLE_VPC_PEER_LINK_NATIVE_VLAN: 'false'
+                    VPC_PEER_KEEP_ALIVE_OPTION: management
+                    VPC_AUTO_RECOVERY_TIME: '360'
+                    VPC_DELAY_RESTORE: '150'
+                    VPC_PEER_LINK_PO: '500'
+                    VPC_ENABLE_IPv6_ND_SYNC: 'true'
+                    ENABLE_FABRIC_VPC_DOMAIN_ID: 'false'
+                    FABRIC_VPC_DOMAIN_ID: ''
+                    FABRIC_VPC_QOS_POLICY_NAME: ''
+                    BGP_LB_ID: '0'
+                    BGP_MAX_PATH: '4'
+                    BGP_AUTH_ENABLE: 'false'
+                    BGP_AUTH_KEY_TYPE: ''
+                    BGP_AUTH_KEY: ''
+                    PIM_HELLO_AUTH_KEY: ''
+                    BFD_ENABLE: 'false'
+                    BFD_IBGP_ENABLE: false
+                    BFD_AUTH_ENABLE: false
+                    BFD_AUTH_KEY_ID: ''
+                    BFD_AUTH_KEY: ''
+                    FABRIC_MTU: "{{ fabric_mtu }}"
+                    L2_HOST_INTF_MTU: "{{ fabric_mtu }}"
+                    ENABLE_PVLAN: 'false'
+                    default_pvlan_sec_network: ''
+                    POWER_REDUNDANCY_MODE: ps-redundant
+                    COPP_POLICY: strict
+                    DCI_SUBNET_RANGE: 10.33.0.0/16
+                    DCI_SUBNET_TARGET_MASK: '30'
+                    CDP_ENABLE: 'false'
+                    ENABLE_NXAPI: 'true'
+                    STRICT_CC_MODE: 'false'
+                    AAA_REMOTE_IP_ENABLED: 'false'
+                    SNMP_SERVER_HOST_TRAP: 'true'
+                    TCAM_ALLOCATION: 'true'
+                    DEAFULT_QUEUING_POLICY_CLOUDSCALE: 'AI_Cluster_QOS_template'
+                    DEAFULT_QUEUING_POLICY_R_SERIES: 'AI_Cluster_QOS_template'
+                    DEAFULT_QUEUING_POLICY_OTHER: 'AI_Cluster_QOS_template'
+                    ENABLE_MACSEC: 'false'
+                    MACSEC_KEY_STRING: ''
+                    MACSEC_ALGORITHM: ''
+                    MACSEC_FALLBACK_KEY_STRING: ''
+                    MACSEC_FALLBACK_ALGORITHM: ''
+                    MACSEC_CIPHER_SUITE: ''
+                    MACSEC_REPORT_TIMER: ''
+                    EXTRA_CONF_LEAF: ''
+                    EXTRA_CONF_SPINE: ''
+                    EXTRA_CONF_INTRA_LINKS: |
+                        priority-flow-control mode on
+                        priority-flow-control watch-dog-interval on
+                        service-policy type qos input {{ qos_input_policy }}
+                    DNS_SERVER_IP_LIST: ''
+                    DNS_SERVER_VRF: ''
+                    NTP_SERVER_IP_LIST: ''
+                    NTP_SERVER_VRF: ''
+                    SYSLOG_SERVER_IP_LIST: ''
+                    SYSLOG_SEV: ''
+                    SYSLOG_SERVER_VRF: ''
+                    AAA_SERVER_CONF: ''
+                    BOOTSTRAP_ENABLE: 'false'
+                    DHCP_ENABLE: false
+                    DHCP_IPV6_ENABLE: ''
+                    DHCP_START: ''
+                    DHCP_END: ''
+                    MGMT_GW: ''
+                    MGMT_PREFIX: ''
+                    ENABLE_AAA: false
+                    BOOTSTRAP_CONF: ''
+                    BOOTSTRAP_MULTISUBNET: ''
+                    enableRealTimeBackup: ''
+                    enableScheduledBackup: ''
+                    scheduledTime: ''
+                    ENABLE_NETFLOW: 'false'
+                    NETFLOW_EXPORTER_LIST: ''
+                    NETFLOW_RECORD_LIST: ''
+                    NETFLOW_MONITOR_LIST: ''
+                    SUBNET_TARGET_MASK: '30'
+                    LOOPBACK0_IP_RANGE: 10.2.0.0/22
+                    SUBNET_RANGE: 10.4.0.0/16
+                    ROUTE_MAP_TAG: '12345'
+                    SUBINTERFACE_RANGE: 2-511
+                    VPC_DOMAIN_ID_RANGE: 1-1000
+                    FABRIC_VPC_QOS: 'false'
+                    ENABLE_NXAPI_HTTP: 'true'
+                    GRFIELD_DEBUG_FLAG: Disable
+                    ENABLE_DEFAULT_QUEUING_POLICY: 'true'
+                    UNDERLAY_IS_V6: 'false'
+                    FHRP_PROTOCOL: hsrp
+                    ANYCAST_GW_MAC: ''
+                    ENABLE_NGOAM: false
+                    ENABLE_TENANT_DHCP: false
+                    ADVERTISE_PIP_BGP: false
+                    REPLICATION_MODE: ''
+                    MULTICAST_GROUP_SUBNET: ''
+                    ENABLE_TRM: false
+                    RP_COUNT: ''
+                    RP_MODE: ''
+                    RP_LB_ID: ''
+                    default_vrf: ''
+                    default_network: ''
+                    vrf_extension_template: ''
+                    network_extension_template: ''
+                    OVERLAY_MODE: ''
+                    LOOPBACK1_IP_RANGE: ''
+                    ANYCAST_RP_IP_RANGE: ''
+                    L2_SEGMENT_ID_RANGE: ''
+                    L3_PARTITION_ID_RANGE: ''
+                    VRF_VLAN_RANGE: ''
+                    VRF_LITE_AUTOCONFIG: ''
+                    NVE_LB_ID: ''
+                    PIM_HELLO_AUTH_ENABLE: false
+                    HD_TIME: ''
+                    ALLOW_LEAF_SAME_AS: false
+    -   name: debug r1
+        ansible.builtin.debug:
+            msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}} {{r1.response.DATA.templateName}} {{r1.response.DATA.nvPairs.FABRIC_NAME}}"
+
+    -   name: Add switches
+        cisco.dcnm.dcnm_inventory:
+            fabric: "{{ fabric_name }}"
+            state: merged
+            config:
+            -   seed_ip: "{{ leaf1 }}"
+                auth_proto: MD5
+                user_name: "{{ username }}"
+                password: "{{ password }}"
+                max_hops: 0
+                role: leaf
+                preserve_config: false
+            -   seed_ip: "{{ leaf2 }}"
+                auth_proto: MD5
+                user_name: "{{ username }}"
+                password: "{{ password }}"
+                max_hops: 0
+                role: leaf
+                preserve_config: false
+            -   seed_ip: "{{ leaf3 }}"
+                auth_proto: MD5
+                user_name: "{{ username }}"
+                password: "{{ password }}"
+                max_hops: 0
+                role: leaf
+                preserve_config: false
+            -   seed_ip: "{{ leaf4 }}"
+                auth_proto: MD5
+                user_name: "{{ username }}"
+                password: "{{ password }}"
+                max_hops: 0
+                role: leaf
+                preserve_config: false
+            -   seed_ip: "{{ spine1 }}"
+                auth_proto: MD5
+                user_name: "{{ username }}"
+                password: "{{ password }}"
+                max_hops: 0
+                role: spine
+                preserve_config: false
+            -   seed_ip: "{{ spine2 }}"
+                auth_proto: MD5
+                user_name: "{{ username }}"
+                password: "{{ password }}"
+                max_hops: 0
+                role: spine
+                preserve_config: false
+            -   seed_ip: "{{ spine3 }}"
+                auth_proto: MD5
+                user_name: "{{ username }}"
+                password: "{{ password }}"
+                max_hops: 0
+                role: spine
+                preserve_config: false
+
+    -   name: bgp_leaf_asn policy
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
+            json_data: "{{ vars_dict | to_json }}"
+        register: r1
+        vars:
+            vars_dict:
+                nvPairs:
+                    BGP_AS: "{{ asn_leaf }}"
+                    FABRIC_NAME: ''
+                    SERIAL_NUMBER: ''
+                    POLICY_ID: ''
+                entityName: SWITCH
+                entityType: SWITCH
+                source: ''
+                priority: 500
+                description: Leaf_ASN
+                templateName: leaf_bgp_asn
+                serialNumber: "{{ leaf1_serial }},{{ leaf2_serial }},{{ leaf3_serial }},{{ leaf4_serial }}"
+
+    -   name: leaf1 feature_interface_vlan
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
+            json_data: "{{ vars_dict | to_json }}"
+        register: r1
+        vars:
+            vars_dict:
+                nvPairs: {}
+                entityName: SWITCH
+                entityType: SWITCH
+                source: ''
+                priority: 300
+                description: Leaf1_feature_interface_vlan
+                templateName: feature_interface_vlan_11_1
+                serialNumber: "{{ leaf1_serial }}"
+    -   name: debug r1
+        ansible.builtin.debug:
+            msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}}  {{r1.response}}"
+
+    -   name: "leaf1 PTP vlan {{ ptp_vlan }}"
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
+            json_data: "{{ vars_dict | to_json }}"
+        register: r1
+        vars:
+            vars_dict:
+                nvPairs:
+                    VLAN: "{{ ptp_vlan }}"
+                    NAME: ''
+                    MODE: CE
+                    VNI: ''
+                entityName: SWITCH
+                entityType: SWITCH
+                source: ''
+                priority: 500
+                description: "Leaf1_vlan_{{ ptp_vlan }}"
+                templateName: create_vlan
+                serialNumber: "{{ leaf1_serial }}"
+    -   name: debug r1
+        ansible.builtin.debug:
+            msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}}  {{r1.response}}"
+
+    -   name: leaf1 feature_ptp
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
+            json_data: "{{ vars_dict | to_json }}"
+        register: r1
+        vars:
+            vars_dict:
+                nvPairs: {}
+                entityName: SWITCH
+                entityType: SWITCH
+                source: ''
+                priority: 300
+                description: Leaf1_PTP
+                templateName: feature_ptp
+                serialNumber: "{{ leaf1_serial }}"
+    -   name: debug r1
+        ansible.builtin.debug:
+            msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}}  {{r1.response}}"
+
+    -   name: main REST POST config-save FABRIC {{ fabric_name }}
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric_name }}/config-save"
+            json_data: "{{ {} | to_json }}"
+
+    -   name: leaf1 ptp_source_ip
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
+            json_data: "{{ vars_dict | to_json }}"
+        register: r1
+        vars:
+            vars_dict:
+                nvPairs:
+                    SRC_IP: "{{ ptp_source_ip }}"
+                entityName: SWITCH
+                entityType: SWITCH
+                source: ''
+                priority: 500
+                description: Leaf1_ptp_source_ip
+                templateName: ptp_source_ip
+                serialNumber: "{{ leaf1_serial }}"
+    -   name: debug r1
+        ansible.builtin.debug:
+            msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}}  {{r1.response}}"
+
+    -   name: main REST POST config-save FABRIC {{ fabric_name }}
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric_name }}/config-save"
+            json_data: "{{ {} | to_json }}"
+
+    -   name: main REST POST config-deploy FABRIC {{ fabric_name }}
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric_name }}/config-deploy"
+            json_data: "{{ {} | to_json }}"
+
+    -   name: Create host-facing interfaces
+        cisco.dcnm.dcnm_interface:
+            fabric: "{{fabric_name}}"
+            state: replaced
+            config:
+            # Leaf 1
+            -   name: Vlan3967
+                type: svi
+                switch:
+                -   "{{ leaf1 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    adv_subnet_in_underlay: true
+                    mode: vlan
+                    ipv4_addr:  192.168.0.70
+                    ipv4_mask_len: 24
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    description: "Vlan3967 - PTP for NDI"
+            -   name: eth1/9
+                type: eth
+                switch:
+                -   "{{ leaf1 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    mode: routed
+                    ipv4_addr:  192.168.11.1
+                    ipv4_mask_len: 24
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "Traffic Generator"
+            -   name: eth1/10
+                type: eth
+                switch:
+                -   "{{ leaf1 }}"
+                deploy: true
+                profile:
+                    admin_state: true 
+                    mode: monitor
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    description: "SPAN to Traffic Generator"
+            -   name: eth1/11
+                type: eth
+                switch:
+                -   "{{ leaf1 }}"
+                deploy: true
+                profile:
+                    admin_state: true 
+                    mode: routed
+                    ipv4_addr:  192.168.21.1
+                    ipv4_mask_len: 30
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "UCS 192.168.21.1"
+            -   name: eth1/35
+                type: eth
+                switch:
+                -   "{{ leaf1 }}"
+                deploy: true
+                profile:
+                    admin_state: true 
+                    mode: access
+                    cmds:
+                    - ptp
+                    - ptp vlan 3967
+                    - switchport access vlan 3967
+                    - no shutdown
+                    description: "Connection to NDFC Switch - 192.168.21.1"
+            # Leaf 2
+            -   name: eth1/9
+                type: eth
+                switch:
+                -   "{{ leaf2 }}"
+                deploy: true
+                profile:
+                    admin_state: true 
+                    mode: routed
+                    ipv4_addr:  192.168.12.1
+                    ipv4_mask_len: 24
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "Traffic Generator"
+            -   name: eth1/10
+                type: eth
+                switch:
+                -   "{{ leaf2 }}"
+                deploy: true
+                profile:
+                    admin_state: true 
+                    mode: monitor
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    description: "SPAN to Traffic Generator"
+            -   name: eth1/11
+                type: eth
+                switch:
+                -   "{{ leaf2 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    mode: routed
+                    ipv4_addr:  192.168.22.1
+                    ipv4_mask_len: 30
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "UCS 192.168.22.1 - Target"
+            # Leaf 3
+            -   name: eth1/9
+                type: eth
+                switch:
+                -   "{{ leaf3 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    mode: routed
+                    ipv4_addr:  192.168.13.1
+                    ipv4_mask_len: 24
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "Traffic Generator"
+            -   name: eth1/11
+                type: eth
+                switch:
+                -   "{{ leaf3 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    mode: routed
+                    ipv4_addr:  192.168.23.1
+                    ipv4_mask_len: 30
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "UCS 192.168.23.1"
+            # Leaf 4
+            -   name: eth1/9
+                type: eth
+                switch:
+                -   "{{ leaf4 }}"
+                deploy: true
+                profile:
+                    admin_state: true 
+                    mode: routed
+                    ipv4_addr:  192.168.14.1
+                    ipv4_mask_len: 24
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "Traffic Generator"
+            -   name: eth1/11
+                type: eth
+                switch:
+                -   "{{ leaf4 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    mode: routed
+                    ipv4_addr:  192.168.24.1
+                    ipv4_mask_len: 30
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
+                    description: "UCS 192.168.24.1"
+
+    -   name: main REST POST config-save FABRIC {{ fabric_name }}
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric_name }}/config-save"
+            json_data: "{{ {} | to_json }}"
+
+    -   name: main REST POST config-deploy FABRIC {{ fabric_name }}
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric_name }}/config-deploy"
+            json_data: "{{ {} | to_json }}"

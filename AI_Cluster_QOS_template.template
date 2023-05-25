@@ -1,0 +1,98 @@
+##template properties
+name =AI_Cluster_QOS_template;
+description = System 8q QoS queuing policy for N9K Cloudscale Series HW with PFC and ECN;
+tags =QoS_Cloud;
+userDefined = true;
+supportedPlatforms = N9K;
+templateType = POLICY;
+templateSubType = DEVICE;
+contentType = TEMPLATE_CLI;
+implements = ;
+dependencies = ;
+published = false;
+imports = ;
+##
+##template variables
+
+#    Copyright (c) 2020 by Cisco Systems, Inc.
+#    All rights reserved.
+
+##
+##template content
+
+
+class-map type qos match-all class-q1
+  match dscp 8-15
+class-map type qos match-all class-q2
+  match dscp 16-23
+class-map type qos match-all class-q3
+  match dscp 24-31
+class-map type qos match-all class-q4
+  match dscp 32-39
+class-map type qos match-all class-q5
+  match dscp 40-47
+class-map type qos match-all class-q6
+  match dscp 48-55  
+class-map type qos match-all class-q7
+  match dscp 56-63
+
+policy-map type qos QOS_classification_policy
+  class class-q1
+    set qos-group 1
+  class class-q2
+    set qos-group 2
+  class class-q3
+    set qos-group 3
+  class class-q4
+    set qos-group 4
+  class class-q5
+    set qos-group 5
+  class class-q6
+    set qos-group 6
+  class class-default
+    set qos-group 0
+  class class-q7
+    set qos-group 7
+
+policy-map type queuing custom-8q-out-policy
+  class type queuing c-out-8q-q7
+    priority level 1
+  class type queuing c-out-8q-q6
+    bandwidth remaining percent 0
+  class type queuing c-out-8q-q5
+    bandwidth remaining percent 0
+  class type queuing c-out-8q-q4
+    bandwidth remaining percent 0
+  class type queuing c-out-8q-q3
+    bandwidth remaining percent 60
+    random-detect minimum-threshold 150  kbytes maximum-threshold 3000 kbytes drop-probability 7 weight 0 ecn
+  class type queuing c-out-8q-q2
+    bandwidth remaining percent 0
+  class type queuing c-out-8q-q1
+    bandwidth remaining percent 0
+  class type queuing c-out-8q-q-default
+    bandwidth remaining percent 40
+
+policy-map type network-qos custom-8q-nq-policy
+  class type network-qos c-8q-nq7
+    mtu 1500
+  class type network-qos c-8q-nq6
+    mtu 1500
+  class type network-qos c-8q-nq5
+    mtu 1500
+  class type network-qos c-8q-nq4
+    mtu 1500
+  class type network-qos c-8q-nq3
+    pause pfc-cos 3
+    mtu 4200
+  class type network-qos c-8q-nq2
+    mtu 1500
+  class type network-qos c-8q-nq1
+    mtu 1500
+  class type network-qos c-8q-nq-default
+    mtu 1500
+
+system qos
+  service-policy type network-qos custom-8q-nq-policy
+  service-policy type queuing output custom-8q-out-policy
+##
