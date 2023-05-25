@@ -1,4 +1,22 @@
-* Usage
+# NDFC-AIML-Fabric
+
+## About
+
+This repository contains a playbook that will create a fabric, using Cisco's Nexus Dashboard Fabric Controller (NDFC), which support AI/ML workloads.
+
+## Fabric Characteristics
+
+- 3 Spines
+- 4 Leafs
+- eBGP Spine - Leaf peering
+- Spines are in BGP ASN 65535
+- Leafs are in BGP ASC 65011
+- Leaf1 access-mode interface Eth1/35 connects to Nexus Dashboard Insights over vlan 3967 for monitoring the fabric
+- Leaf1 is configured with Precision Time Protocol (PTP) for 
+- All Leafs are provisioned with interfaces to connect to RoCEv2 hosts.
+- RoCEv2 Target host is located on leaf2 interface Ethernet1/11
+
+## Installation and Usage
 
 ### 1. Install cisco.dcnm Ansible Collection 
 
