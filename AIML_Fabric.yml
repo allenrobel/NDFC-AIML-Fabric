@@ -424,36 +424,6 @@
                     cmds:
                     - no shutdown
                     description: "Vlan3967 - PTP for NDI"
-            -   name: eth1/9
-                type: eth
-                switch:
-                -   "{{ leaf1 }}"
-                deploy: true
-                profile:
-                    admin_state: true
-                    mode: routed
-                    ipv4_addr:  192.168.11.1
-                    ipv4_mask_len: 24
-                    route_tag: "12345"
-                    mtu: "{{ fabric_mtu }}"
-                    cmds:
-                    - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "Traffic Generator"
-            -   name: eth1/10
-                type: eth
-                switch:
-                -   "{{ leaf1 }}"
-                deploy: true
-                profile:
-                    admin_state: true 
-                    mode: monitor
-                    mtu: "{{ fabric_mtu }}"
-                    cmds:
-                    - no shutdown
-                    description: "SPAN to Traffic Generator"
             -   name: eth1/11
                 type: eth
                 switch:
@@ -487,36 +457,6 @@
                     - no shutdown
                     description: "Connection to NDFC Switch - 192.168.21.1"
             # Leaf 2
-            -   name: eth1/9
-                type: eth
-                switch:
-                -   "{{ leaf2 }}"
-                deploy: true
-                profile:
-                    admin_state: true 
-                    mode: routed
-                    ipv4_addr:  192.168.12.1
-                    ipv4_mask_len: 24
-                    route_tag: "12345"
-                    mtu: "{{ fabric_mtu }}"
-                    cmds:
-                    - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "Traffic Generator"
-            -   name: eth1/10
-                type: eth
-                switch:
-                -   "{{ leaf2 }}"
-                deploy: true
-                profile:
-                    admin_state: true 
-                    mode: monitor
-                    mtu: "{{ fabric_mtu }}"
-                    cmds:
-                    - no shutdown
-                    description: "SPAN to Traffic Generator"
             -   name: eth1/11
                 type: eth
                 switch:
@@ -536,24 +476,6 @@
                     - service-policy type qos input {{ qos_input_policy }}
                     description: "UCS 192.168.22.1 - Target"
             # Leaf 3
-            -   name: eth1/9
-                type: eth
-                switch:
-                -   "{{ leaf3 }}"
-                deploy: true
-                profile:
-                    admin_state: true
-                    mode: routed
-                    ipv4_addr:  192.168.13.1
-                    ipv4_mask_len: 24
-                    route_tag: "12345"
-                    mtu: "{{ fabric_mtu }}"
-                    cmds:
-                    - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "Traffic Generator"
             -   name: eth1/11
                 type: eth
                 switch:
@@ -573,24 +495,6 @@
                     - service-policy type qos input {{ qos_input_policy }}
                     description: "UCS 192.168.23.1"
             # Leaf 4
-            -   name: eth1/9
-                type: eth
-                switch:
-                -   "{{ leaf4 }}"
-                deploy: true
-                profile:
-                    admin_state: true 
-                    mode: routed
-                    ipv4_addr:  192.168.14.1
-                    ipv4_mask_len: 24
-                    route_tag: "12345"
-                    mtu: "{{ fabric_mtu }}"
-                    cmds:
-                    - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "Traffic Generator"
             -   name: eth1/11
                 type: eth
                 switch:
