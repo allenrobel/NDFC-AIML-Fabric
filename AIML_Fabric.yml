@@ -8,6 +8,7 @@
         fabric_mtu: "9216"
         asn_spine: "65535"
         asn_leaf: "65011"
+        aiml_host_vlan: 2
         ptp_vlan: "3967"
         ptp_source_ip: 192.168.0.100
         qos_input_policy: QOS_classification_policy
@@ -122,8 +123,8 @@
                     BGP_AUTH_KEY_TYPE: ''
                     BGP_AUTH_KEY: ''
                     PIM_HELLO_AUTH_KEY: ''
-                    BFD_ENABLE: 'false'
-                    BFD_IBGP_ENABLE: false
+                    BFD_ENABLE: true
+                    BFD_IBGP_ENABLE: true
                     BFD_AUTH_ENABLE: false
                     BFD_AUTH_KEY_ID: ''
                     BFD_AUTH_KEY: ''
@@ -278,6 +279,7 @@
                 role: spine
                 preserve_config: false
 
+    # All leafs
     -   name: bgp_leaf_asn policy
         cisco.dcnm.dcnm_rest:
             method: POST
@@ -299,7 +301,7 @@
                 templateName: leaf_bgp_asn
                 serialNumber: "{{ leaf1_serial }},{{ leaf2_serial }},{{ leaf3_serial }},{{ leaf4_serial }}"
 
-    -   name: leaf1 feature_interface_vlan
+    -   name: "all leafs: feature_interface_vlan"
         cisco.dcnm.dcnm_rest:
             method: POST
             path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
@@ -312,12 +314,38 @@
                 entityType: SWITCH
                 source: ''
                 priority: 300
-                description: Leaf1_feature_interface_vlan
+                description: all_leafs_feature_interface_vlan
                 templateName: feature_interface_vlan_11_1
-                serialNumber: "{{ leaf1_serial }}"
+                serialNumber: "{{ leaf1_serial }},{{ leaf2_serial }},{{ leaf3_serial }},{{ leaf4_serial }}"
     -   name: debug r1
         ansible.builtin.debug:
             msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}}  {{r1.response}}"
+
+    -   name: "all leafs: aiml_host_vlan {{ aiml_host_vlan }}"
+        cisco.dcnm.dcnm_rest:
+            method: POST
+            path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
+            json_data: "{{ vars_dict | to_json }}"
+        register: r1
+        vars:
+            vars_dict:
+                nvPairs:
+                    VLAN: "{{ aiml_host_vlan }}"
+                    NAME: "AIML_hosts_vlan"
+                    MODE: CE
+                    VNI: ''
+                entityName: SWITCH
+                entityType: SWITCH
+                source: ''
+                priority: 500
+                description: "all_leafs_vlan_{{ aiml_host_vlan }}"
+                templateName: create_vlan
+                serialNumber: "{{ leaf1_serial }},{{ leaf2_serial }},{{ leaf3_serial }},{{ leaf4_serial }}"
+    -   name: debug r1
+        ansible.builtin.debug:
+            msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}}  {{r1.response}}"
+
+    # Leaf 1
 
     -   name: "leaf1 PTP vlan {{ ptp_vlan }}"
         cisco.dcnm.dcnm_rest:
@@ -402,46 +430,27 @@
             path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric_name }}/config-deploy"
             json_data: "{{ {} | to_json }}"
 
-    -   name: Create host-facing interfaces
+    -   name: "all leafs: Create host-facing interfaces"
         cisco.dcnm.dcnm_interface:
             fabric: "{{fabric_name}}"
             state: replaced
             config:
-            # Leaf 1
-            -   name: Vlan3967
-                type: svi
-                switch:
-                -   "{{ leaf1 }}"
-                deploy: true
-                profile:
-                    admin_state: true
-                    adv_subnet_in_underlay: true
-                    mode: vlan
-                    ipv4_addr:  192.168.0.70
-                    ipv4_mask_len: 24
-                    route_tag: "12345"
-                    mtu: "{{ fabric_mtu }}"
-                    cmds:
-                    - no shutdown
-                    description: "Vlan3967 - PTP for NDI"
-            -   name: eth1/11
+            # All leafs
+            -   name: Ethernet1/11
                 type: eth
                 switch:
                 -   "{{ leaf1 }}"
+                -   "{{ leaf2 }}"
+                -   "{{ leaf3 }}"
+                -   "{{ leaf4 }}"
                 deploy: true
                 profile:
                     admin_state: true 
-                    mode: routed
-                    ipv4_addr:  192.168.21.1
-                    ipv4_mask_len: 30
-                    route_tag: "12345"
-                    mtu: "{{ fabric_mtu }}"
+                    mode: access
                     cmds:
                     - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "UCS 192.168.21.1"
+                    - switchport access vlan 2
+                    description: "AI/ML Hosts"
             -   name: eth1/35
                 type: eth
                 switch:
@@ -455,64 +464,90 @@
                     - ptp vlan 3967
                     - switchport access vlan 3967
                     - no shutdown
-                    description: "Connection to NDFC Switch - 192.168.21.1"
+                    description: "Connection to NDI"
+            -   name: Vlan3967
+                type: svi
+                switch:
+                -   "{{ leaf1 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    adv_subnet_in_underlay: true
+                    mode: vlan
+                    ipv4_addr: 192.168.0.70
+                    ipv4_mask_len: 24
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    description: "Vlan3967 - PTP for NDI"
+            -   name: Vlan2
+                type: svi
+                switch:
+                -   "{{ leaf1 }}"
+                deploy: true
+                profile:
+                    admin_state: true
+                    adv_subnet_in_underlay: true
+                    mode: vlan
+                    ipv4_addr: 192.168.21.1
+                    ipv4_mask_len: 24
+                    route_tag: "12345"
+                    mtu: "{{ fabric_mtu }}"
+                    cmds:
+                    - no shutdown
+                    description: "Vlan{{ aiml_host_vlan }} - AI/ML Hosts"
             # Leaf 2
-            -   name: eth1/11
-                type: eth
+            -   name: Vlan2
+                type: svi
                 switch:
                 -   "{{ leaf2 }}"
                 deploy: true
                 profile:
                     admin_state: true
-                    mode: routed
-                    ipv4_addr:  192.168.22.1
-                    ipv4_mask_len: 30
+                    adv_subnet_in_underlay: true
+                    mode: vlan
+                    ipv4_addr: 192.168.22.1
+                    ipv4_mask_len: 24
                     route_tag: "12345"
                     mtu: "{{ fabric_mtu }}"
                     cmds:
                     - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "UCS 192.168.22.1 - Target"
+                    description: "Vlan{{ aiml_host_vlan }} - AI/ML Hosts"
             # Leaf 3
-            -   name: eth1/11
-                type: eth
+            -   name: Vlan2
+                type: svi
                 switch:
                 -   "{{ leaf3 }}"
                 deploy: true
                 profile:
                     admin_state: true
-                    mode: routed
-                    ipv4_addr:  192.168.23.1
-                    ipv4_mask_len: 30
+                    adv_subnet_in_underlay: true
+                    mode: vlan
+                    ipv4_addr: 192.168.23.1
+                    ipv4_mask_len: 24
                     route_tag: "12345"
                     mtu: "{{ fabric_mtu }}"
                     cmds:
                     - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "UCS 192.168.23.1"
+                    description: "Vlan{{ aiml_host_vlan }} - AI/ML Hosts"
             # Leaf 4
-            -   name: eth1/11
-                type: eth
+            -   name: Vlan2
+                type: svi
                 switch:
                 -   "{{ leaf4 }}"
                 deploy: true
                 profile:
                     admin_state: true
-                    mode: routed
-                    ipv4_addr:  192.168.24.1
-                    ipv4_mask_len: 30
+                    adv_subnet_in_underlay: true
+                    mode: vlan
+                    ipv4_addr: 192.168.24.1
+                    ipv4_mask_len: 24
                     route_tag: "12345"
                     mtu: "{{ fabric_mtu }}"
                     cmds:
                     - no shutdown
-                    - priority-flow-control mode on
-                    - priority-flow-control watch-dog-interval on
-                    - service-policy type qos input {{ qos_input_policy }}
-                    description: "UCS 192.168.24.1"
+                    description: "Vlan{{ aiml_host_vlan }} - AI/ML Hosts"
 
     -   name: main REST POST config-save FABRIC {{ fabric_name }}
         cisco.dcnm.dcnm_rest:
