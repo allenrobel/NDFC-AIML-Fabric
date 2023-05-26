@@ -6,6 +6,8 @@ This repository contains a playbook that will create a fabric, using Cisco's Nex
 
 ## Fabric Characteristics
 
+![AIML_Fabric_Topology](./doc/Topology.png "AIML Fabric Topology")
+
 - 3 Spines
 - 4 Leafs
 - eBGP Spine - Leaf peering
