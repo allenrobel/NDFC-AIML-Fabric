@@ -1,36 +1,30 @@
-class-map type qos match-all class-q1
-  match dscp 8-15
-class-map type qos match-all class-q2
-  match dscp 16-23
-class-map type qos match-all class-q3
-  match dscp 24-31
-class-map type qos match-all class-q4
-  match dscp 32-39
-class-map type qos match-all class-q5
-  match dscp 40-47
-class-map type qos match-all class-q6
-  match dscp 48-55  
-class-map type qos match-all class-q7
-  match dscp 56-63
+# Resulting running-config after applying AI_Cluster_QOS_template
 
+leaf1# show running-config ipqos
+
+!Command: show running-config ipqos
+!Running configuration last done at: Mon May 29 04:58:44 2023
+!Time: Tue May 30 22:05:43 2023
+
+version 10.3(2) Bios:version 05.47 
+policy-map type network-qos custom-8q-nq-policy
+  class type network-qos c-8q-nq7
+  class type network-qos c-8q-nq3
+    mtu 9216
+    pause pfc-cos 3
+  class type network-qos c-8q-nq-default
+
+class-map type qos match-all class-q3
+  match dscp 24
+class-map type qos match-all class-q7
+  match dscp 48
 policy-map type qos QOS_classification_policy
-  class class-q1
-    set qos-group 1
-  class class-q2
-    set qos-group 2
   class class-q3
     set qos-group 3
-  class class-q4
-    set qos-group 4
-  class class-q5
-    set qos-group 5
-  class class-q6
-    set qos-group 6
-  class class-default
-    set qos-group 0
   class class-q7
     set qos-group 7
-
+  class class-default
+    set qos-group 0
 policy-map type queuing custom-8q-out-policy
   class type queuing c-out-8q-q7
     priority level 1
@@ -42,33 +36,58 @@ policy-map type queuing custom-8q-out-policy
     bandwidth remaining percent 0
   class type queuing c-out-8q-q3
     bandwidth remaining percent 60
-    random-detect minimum-threshold 150  kbytes maximum-threshold 3000 kbytes drop-probability 7 weight 0 ecn
+    random-detect minimum-threshold 150 kbytes maximum-threshold 3000 kbytes drop-probability 7 weight 0 ecn
   class type queuing c-out-8q-q2
     bandwidth remaining percent 0
   class type queuing c-out-8q-q1
     bandwidth remaining percent 0
   class type queuing c-out-8q-q-default
     bandwidth remaining percent 40
-
-policy-map type network-qos custom-8q-nq-policy
-  class type network-qos c-8q-nq7
-    mtu 1500
-  class type network-qos c-8q-nq6
-    mtu 1500
-  class type network-qos c-8q-nq5
-    mtu 1500
-  class type network-qos c-8q-nq4
-    mtu 1500
-  class type network-qos c-8q-nq3
-    pause pfc-cos 3
-    mtu 4200
-  class type network-qos c-8q-nq2
-    mtu 1500
-  class type network-qos c-8q-nq1
-    mtu 1500
-  class type network-qos c-8q-nq-default
-    mtu 1500
-
 system qos
   service-policy type network-qos custom-8q-nq-policy
   service-policy type queuing output custom-8q-out-policy
+
+
+interface Ethernet1/1
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+interface Ethernet1/2
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+interface Ethernet1/3
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+interface Ethernet1/4
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+interface Ethernet1/5
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+interface Ethernet1/6
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+interface Ethernet1/9
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+interface Ethernet1/11
+  service-policy type qos input QOS_classification_policy
+  priority-flow-control mode on
+  priority-flow-control watch-dog-interval on
+
+
+
+leaf1#    
