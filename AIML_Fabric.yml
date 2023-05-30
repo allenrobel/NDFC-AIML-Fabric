@@ -12,6 +12,7 @@
         ptp_vlan: "3967"
         ptp_source_ip: 192.168.0.100
         qos_input_policy: QOS_classification_policy
+        qos_template_name: AI_Cluster_QOS_template
         username: "{{ ansible_user }}"
         password: "{{ ansible_password }}"
         leaf1: 192.168.1.111
@@ -142,9 +143,9 @@
                     AAA_REMOTE_IP_ENABLED: 'false'
                     SNMP_SERVER_HOST_TRAP: 'true'
                     TCAM_ALLOCATION: 'true'
-                    DEAFULT_QUEUING_POLICY_CLOUDSCALE: 'AI_Cluster_QOS_template'
-                    DEAFULT_QUEUING_POLICY_R_SERIES: 'AI_Cluster_QOS_template'
-                    DEAFULT_QUEUING_POLICY_OTHER: 'AI_Cluster_QOS_template'
+                    DEAFULT_QUEUING_POLICY_CLOUDSCALE: "{{ qos_template_name }}"
+                    DEAFULT_QUEUING_POLICY_R_SERIES: "{{ qos_template_name }}"
+                    DEAFULT_QUEUING_POLICY_OTHER: "{{ qos_template_name }}"
                     ENABLE_MACSEC: 'false'
                     MACSEC_KEY_STRING: ''
                     MACSEC_ALGORITHM: ''
