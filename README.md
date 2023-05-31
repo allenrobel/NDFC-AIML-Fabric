@@ -2,7 +2,7 @@
 
 ## About
 
-This repository contains a playbook that will create a fabric, using Cisco's Nexus Dashboard Fabric Controller (NDFC), which support AI/ML workloads.
+This repository contains an Ansible playbook and related assets which provisions a fabric supporting AI/ML workloads using Cisco's Nexus Dashboard Fabric Controller (NDFC).
 
 ## Fabric Characteristics
 
@@ -15,12 +15,11 @@ This repository contains a playbook that will create a fabric, using Cisco's Nex
 - Leafs are in BGP ASC 65011
 - Leaf1 access-mode interface Eth1/35 connects to Nexus Dashboard Insights over vlan 3967 for monitoring the fabric
 - Leaf1 is configured with Precision Time Protocol (PTP) for 
-- All Leafs are provisioned with interfaces to connect to RoCEv2 hosts.
-- RoCEv2 Target host is located on leaf2 interface Ethernet1/11
+- RoCEv2 initiators and targets connect to each leaf via access-mode (vlan 2) interface (Ethernet1/11) and corresponding Vlan2 SVI.
 
 ## Installation and Usage
 
-### 1. Install cisco.dcnm Ansible Collection 
+### 1. Install the cisco.dcnm Ansible Collection 
 
 The Ansible playbook in this repo requires that the cisco.dcnm Collection be installed.
 
@@ -30,7 +29,7 @@ ansible-galaxy collection install cisco.dcnm
 
 ## 2. Ansible Custom Configuration
 
-DCNM/NDFC requires increasing the default timeout for persistent connections from the default of 30 seconds to >= 1000 seconds.  We have provided an ansible.cfg file with the requisite changes in this repo's top-level directory.  If you would rather edit your existing ansible.cfg file (where ever it is), the changes are shown below.
+NDFC requires increasing the default timeout for persistent connections from Ansible's default of 30 seconds to >= 1000 seconds.  We have provided an ansible.cfg file with the requisite changes in this repo's top-level directory.  If you would rather edit your existing ansible.cfg file (wherever it is), the changes are shown below.
 
 ```bash
 [persistent_connection]
@@ -113,8 +112,7 @@ Operations -> Templates -> Actions -> Import
 ### 6. Update the vars section of the ``AIML_Fabric.yml`` playbook with the IP addresses and serial numbers of your switches, and with the PTP source IP that we are configuring on leaf1.
 
 
-
-### Run the playbook
+### 7. Run the playbook
 
 #### If you encrypted your NDFC password:
 
