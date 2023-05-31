@@ -451,7 +451,11 @@
                     cmds:
                     - no shutdown
                     - switchport access vlan 2
+                    - priority-flow-control mode on
+                    - priority-flow-control watch-dog-interval on
+                    - service-policy type qos input {{ qos_input_policy }}
                     description: "AI/ML Hosts"
+            # Leaf 1
             -   name: eth1/35
                 type: eth
                 switch:
