@@ -280,8 +280,7 @@
                 role: spine
                 preserve_config: false
 
-    # All leafs
-    -   name: bgp_leaf_asn policy
+    -   name: "all leafs: bgp_leaf_asn policy"
         cisco.dcnm.dcnm_rest:
             method: POST
             path: /appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/policies/bulk-create
@@ -347,7 +346,6 @@
             msg: "r1 {{r1.response.RETURN_CODE}} {{r1.response.MESSAGE}}  {{r1.response}}"
 
     # Leaf 1
-
     -   name: "leaf1 PTP vlan {{ ptp_vlan }}"
         cisco.dcnm.dcnm_rest:
             method: POST
@@ -431,7 +429,7 @@
             path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric_name }}/config-deploy"
             json_data: "{{ {} | to_json }}"
 
-    -   name: "all leafs: Create host-facing interfaces"
+    -   name: "all leafs: host-facing interfaces"
         cisco.dcnm.dcnm_interface:
             fabric: "{{fabric_name}}"
             state: replaced
