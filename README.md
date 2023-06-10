@@ -4,6 +4,13 @@
 
 This repository contains an Ansible playbook and related assets which provisions a fabric supporting AI/ML workloads using Cisco's Nexus Dashboard Fabric Controller (NDFC).
 
+## Repository Contents
+
+1. AIML_Fabric.yml - The playbook which creates the fabric
+2. doc/* - Informational files for the curious
+3. inventory/* - Edit inventory/hosts and inventory/group_vars/ndfc per steps 3 and 4 below.
+4. ansible.cfg - Required for NDFC.  See step 2 below.
+
 ## Fabric Characteristics
 
 ![AIML_Fabric_Topology](./doc/Topology.png "AIML Fabric Topology")
@@ -105,14 +112,10 @@ ndfc:
       ansible_host: 192.168.1.1
 ```
 
-### 5. Import the file ``./AI_Cluster_QOS_template.template`` into your NDFC instance.
-
-Operations -> Templates -> Actions -> Import
-
-### 6. Update the vars section of the ``AIML_Fabric.yml`` playbook with the IP addresses and serial numbers of your switches, and with the PTP source IP that we are configuring on leaf1.
+### 5. Update the vars section of the ``AIML_Fabric.yml`` playbook with the IP addresses and serial numbers of your switches, and with the PTP source IP that we are configuring on leaf1.
 
 
-### 7. Run the playbook
+### 6. Run the playbook
 
 #### If you encrypted your NDFC password:
 
