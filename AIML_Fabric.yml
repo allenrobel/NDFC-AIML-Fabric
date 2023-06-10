@@ -36,6 +36,7 @@
             path: /appcenter/cisco/ndfc/api/v1/configtemplate/rest/config/templates/{{qos_template_name}}
         register: r0
         ignore_errors: true
+        failed_when: '"foo_bar_baz" in r0'
 
     -   name: "Create Template {{ qos_template_name }}"
         cisco.dcnm.dcnm_rest:
