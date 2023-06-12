@@ -47,7 +47,66 @@
         vars:
             vars_dict:
                 "templatename": "{{qos_template_name}}"
-                "content": "##template properties \nname= {{qos_template_name}};\ndescription= System 8q QoS queuing policy for N9K Cloudscale Series HW with PFC and ECN;\ntags= QoS_Cloud;\ntemplateType= POLICY;\ntemplateSubType= DEVICE;\ncontentType= TEMPLATE_CLI;\nsupportedPlatforms= N9K;##template variables\n\n#    Copyright (c) 2020 by Cisco Systems, Inc.\n#    All rights reserved.\n\n##\n##template content\n\n\n\nclass-map type qos match-all class-q3\n  match dscp 24\nclass-map type qos match-all class-q7\n  match dscp 48\n\npolicy-map type qos QOS_classification_policy\n  class class-q3\n    set qos-group 3\n  class class-default\n    set qos-group 0\n  class class-q7\n    set qos-group 7\n\npolicy-map type queuing custom-8q-out-policy\n  class type queuing c-out-8q-q7\n    priority level 1\n  class type queuing c-out-8q-q6\n    bandwidth remaining percent 0\n  class type queuing c-out-8q-q5\n    bandwidth remaining percent 0\n  class type queuing c-out-8q-q4\n    bandwidth remaining percent 0\n  class type queuing c-out-8q-q3\n    bandwidth remaining percent 60\n    random-detect minimum-threshold 150  kbytes maximum-threshold 3000 kbytes drop-probability 7 weight 0 ecn\n  class type queuing c-out-8q-q2\n    bandwidth remaining percent 0\n  class type queuing c-out-8q-q1\n    bandwidth remaining percent 0\n  class type queuing c-out-8q-q-default\n    bandwidth remaining percent 40\n\npolicy-map type network-qos custom-8q-nq-policy\n  class type network-qos c-8q-nq7\n    mtu 1500\n  class type network-qos c-8q-nq3\n    pause pfc-cos 3\n    mtu 9216\n  class type network-qos c-8q-nq-default\n    mtu 1500\n\nsystem qos\n  service-policy type network-qos custom-8q-nq-policy\n  service-policy type queuing output custom-8q-out-policy\n##\n"
+                "content": |
+                    "
+                    ##template properties
+                    name = {{qos_template_name}};
+                    description = System 8q QoS queuing policy for N9K Cloudscale Series HW with PFC and ECN;
+                    tags = QoS_Cloud;
+                    templateType = POLICY;
+                    templateSubType = DEVICE;
+                    contentType = TEMPLATE_CLI;
+                    supportedPlatforms = N9K;
+                    ##template variables
+                    #    Copyright (c) 2020 by Cisco Systems, Inc.
+                    #    All rights reserved.
+                    ##
+                    ##template content
+
+                    class-map type qos match-all class-q3
+                      match dscp 24
+                    class-map type qos match-all class-q7 
+                      match dscp 48
+
+                    policy-map type qos QOS_classification_policy
+                      class class-q3
+                        set qos-group 3
+                      class class-default
+                        set qos-group 0
+                      class class-q7
+                        set qos-group 7
+
+                    policy-map type queuing custom-8q-out-policy
+                      class type queuing c-out-8q-q7
+                        priority level 1
+                      class type queuing c-out-8q-q6
+                        bandwidth remaining percent 0
+                      class type queuing c-out-8q-q5
+                        bandwidth remaining percent 0
+                      class type queuing c-out-8q-q4
+                        bandwidth remaining percent 0
+                      class type queuing c-out-8q-q3
+                        bandwidth remaining percent 60
+                        random-detect minimum-threshold 150 kbytes maximum-threshold 3000 kbytes drop-probability 7 weight 0 ecn
+                      class type queuing c-out-8q-q2
+                        bandwidth remaining percent 0
+                      class type queuing c-out-8q-q1
+                        bandwidth remaining percent 0 
+                      class type queuing c-out-8q-q-default
+                        bandwidth remaining percent 40
+                    policy-map type network-qos custom-8q-nq-policy
+                      class type network-qos c-8q-nq7
+                        mtu 1500
+                      class type network-qos c-8q-nq3
+                        pause pfc-cos 3
+                        mtu 9216
+                      class type network-qos c-8q-nq-default
+                        mtu 1500
+                    system qos
+                      service-policy type network-qos custom-8q-nq-policy
+                      service-policy type queuing output custom-8q-out-policy
+                    ##
+                    "
         when: '"not found" in r0|lower'
 
     -   name: "Create Fabric {{fabric_name}}"
